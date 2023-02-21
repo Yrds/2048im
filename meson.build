@@ -1,4 +1,4 @@
-project('raylib-meson', 'c', 'cpp')
+project('raylib-meson', 'c', 'cpp', default_options: ['cpp_std=c++20'])
 
 cc = meson.get_compiler('c')
 cxx = meson.get_compiler('cpp')
