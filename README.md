@@ -1,6 +1,13 @@
 # 2048im
 
-Improved version of 2048 game
+Improved version of 2048 game made with raylib
+
+## Milestones
+
+- [ ] Fully functional classic version
+- [ ] Beautiful menu and animations
+- [ ] Improved Version
+- [ ] Online Scoreboard
 
 ## Setting up
 Native builds:
