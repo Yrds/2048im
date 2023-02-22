@@ -224,7 +224,7 @@ void frame() {
     const auto gridRectangle = getGridRect();
     DrawRectangle(gridRectangle.x - 1, gridRectangle.y - 1,
                   gridRectangle.width + 1, gridRectangle.height + 1,
-                  ColorAlpha({255, 255, 255}, 0.9f));
+                  ColorAlpha({255, 255, 255}, 0.5f));
     DrawText(text.c_str(),
              windowSize.x / 2 - static_cast<int>(measuredText / 2),
              windowSize.y / 2, fontSize, RED);
