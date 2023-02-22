@@ -29,8 +29,6 @@ endif
 raylib_subproject = cmake.subproject('raylib', options: raylib_opts)
 dependencies += raylib_subproject.dependency('raylib')
 
-glfw_subproject = subproject('glfw')
-dependencies += glfw_subproject.get_variable('glfw_dep')
 
 # General configuration
 if host_machine.system() == 'windows'
@@ -44,6 +42,9 @@ elif host_machine.system() == 'linux'
     cc.find_library('m'),
     cc.find_library('dl'),
   ]
+
+  glfw_subproject = subproject('glfw')
+  dependencies += glfw_subproject.get_variable('glfw_dep')
 elif host_machine.system() == 'emscripten'
   link_args += [
     '-s', 'ENVIRONMENT=web',
