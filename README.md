@@ -11,9 +11,9 @@ Improved version of 2048 game made with raylib
 
 ## Screenshots
 
-[01](screenshots/01.png)
-[02](screenshots/02.png)
-[03](screenshots/03.png)
+![01](screenshots/01.png)
+![02](screenshots/02.png)
+![03](screenshots/03.png)
 
 ## Setting up
 Native builds:
