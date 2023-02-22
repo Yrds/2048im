@@ -5,46 +5,44 @@
 #endif
 
 #include <array>
-#include <vector>
-#include <string>
 #include <iostream>
+#include <string>
+#include <vector>
 
 constexpr auto gridSize = 4;
 constexpr auto cellSize = 50;
-constexpr Vector2 windowSize = {800, 450};
-constexpr Vector2 gridPosition = {100, 100};
-
-
+constexpr Vector2 gridPosition = {10, 45};
+constexpr Vector2 windowSize = {20 + gridSize * cellSize, 250};
 
 auto gameOver = false;
 
-using Grid =std::array<std::array<int, gridSize>, gridSize>;
+using Grid = std::array<std::array<int, gridSize>, gridSize>;
 
-Grid grid = std::array<std::array<int, gridSize>, gridSize> {{
-    {0, 2, 0, 0},
-    {0, 0, 0, 0},
-    {0, 0, 0, 0},
-    {0, 0, 0, 0}
-}};
+Grid grid = std::array<std::array<int, gridSize>, gridSize>{
+    {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}};
 
-template<typename T>
-struct Vector2T {
+auto score = 0;
+
+template <typename T> struct Vector2T {
   T x, y;
 };
 
 constexpr Rectangle getGridRect() {
-  return {gridPosition.x, gridPosition.y, cellSize * gridSize, cellSize * gridSize};
+  return {gridPosition.x, gridPosition.y, cellSize * gridSize,
+          cellSize * gridSize};
 }
 
-bool collideCells(Grid &grid, Vector2T<int> cellA, Vector2T<int> cellB, bool onlyTest) {
+bool collideCells(Grid &grid, Vector2T<int> cellA, Vector2T<int> cellB,
+                  bool onlyTest) {
   if (grid[cellA.x][cellA.y] == grid[cellB.x][cellB.y]) {
-    if(!onlyTest) {
+    if (!onlyTest) {
       grid[cellA.x][cellA.y] = grid[cellB.x][cellB.y] * 2;
+      score += grid[cellA.x][cellA.y];
       grid[cellB.x][cellB.y] = 0;
     }
     return true;
   } else if (grid[cellA.x][cellA.y] == 0 && grid[cellB.x][cellB.y]) {
-    if(!onlyTest) {
+    if (!onlyTest) {
       grid[cellA.x][cellA.y] = grid[cellB.x][cellB.y];
       grid[cellB.x][cellB.y] = 0;
     }
@@ -54,21 +52,23 @@ bool collideCells(Grid &grid, Vector2T<int> cellA, Vector2T<int> cellB, bool onl
   return false;
 }
 
-bool moveHorizontal(Grid& grid, Vector2 direction, bool onlyTest = false) {
+bool moveHorizontal(Grid &grid, Vector2 direction, bool onlyTest = false) {
   auto moved = false;
   const auto columnStart = direction.x == -1 ? 0 : gridSize - 1;
   const auto columnEnd = direction.x == -1 ? gridSize - 1 : 0;
   const auto columnDirection = direction.x == -1 ? 1 : -1;
 
-  for (auto line = 0; line != gridSize; line ++) {
-    for (auto column = columnStart; column != columnEnd; column += columnDirection) {
-      for (auto cell = column + columnDirection; cell != columnEnd + columnDirection; cell += columnDirection) {
-        if(collideCells(grid, {line, column}, {line, cell}, onlyTest)) {
+  for (auto line = 0; line != gridSize; line++) {
+    for (auto column = columnStart; column != columnEnd;
+         column += columnDirection) {
+      for (auto cell = column + columnDirection;
+           cell != columnEnd + columnDirection; cell += columnDirection) {
+        if (collideCells(grid, {line, column}, {line, cell}, onlyTest)) {
           moved = true;
         };
-        if(grid[line][cell]) { 
+        if (grid[line][cell]) {
           break;
-        } 
+        }
       }
     }
   }
@@ -76,22 +76,23 @@ bool moveHorizontal(Grid& grid, Vector2 direction, bool onlyTest = false) {
   return moved;
 }
 
-bool moveVertical(Grid& grid, Vector2 direction, bool onlyTest = false) {
+bool moveVertical(Grid &grid, Vector2 direction, bool onlyTest = false) {
   const auto lineStart = direction.y == -1 ? 0 : gridSize - 1;
   const auto lineEnd = direction.y == -1 ? gridSize - 1 : 0;
   const auto lineDirection = direction.y == -1 ? 1 : -1;
 
   auto moved = false;
 
-  for (auto column = 0; column != gridSize; column ++) {
+  for (auto column = 0; column != gridSize; column++) {
     for (auto line = lineStart; line != lineEnd; line += lineDirection) {
-      for (auto cell = line + lineDirection; cell != lineEnd + lineDirection; cell += lineDirection) {
-        if(collideCells(grid, {line, column}, {cell, column}, onlyTest)) {
+      for (auto cell = line + lineDirection; cell != lineEnd + lineDirection;
+           cell += lineDirection) {
+        if (collideCells(grid, {line, column}, {cell, column}, onlyTest)) {
           moved = true;
         };
-        if(grid[cell][column]) { 
+        if (grid[cell][column]) {
           break;
-        } 
+        }
       }
     }
   }
@@ -100,7 +101,7 @@ bool moveVertical(Grid& grid, Vector2 direction, bool onlyTest = false) {
 }
 
 bool moveBlocks(Grid &grid, Vector2 direction, bool onlyTest = false) {
-  if(direction.x) {
+  if (direction.x) {
     return moveHorizontal(grid, direction, onlyTest);
   } else {
     return moveVertical(grid, direction, onlyTest);
@@ -109,38 +110,54 @@ bool moveBlocks(Grid &grid, Vector2 direction, bool onlyTest = false) {
   return false;
 }
 
-void putRandomBlock(Grid& grid) {
+void putRandomBlock(Grid &grid) {
   std::vector<Vector2T<int>> availablePlaces;
 
-  for(auto line = 0; line < gridSize; line ++) {
-    for(auto column = 0; column < gridSize; column++) {
-      if(grid[line][column] == 0) {
+  for (auto line = 0; line < gridSize; line++) {
+    for (auto column = 0; column < gridSize; column++) {
+      if (grid[line][column] == 0) {
         availablePlaces.push_back({line, column});
       }
     }
   }
 
-  if(availablePlaces.size()) {
-  auto randomPlace = availablePlaces[GetRandomValue(0, availablePlaces.size() - 1)];
-  auto randomNumber = GetRandomValue(0, 1);
+  if (availablePlaces.size()) {
+    auto randomPlace =
+        availablePlaces[GetRandomValue(0, availablePlaces.size() - 1)];
+    auto randomNumber = GetRandomValue(0, 1);
 
-  grid[randomPlace.x][randomPlace.y] = randomNumber ? 2 : 4;
+    grid[randomPlace.x][randomPlace.y] = randomNumber ? 2 : 4;
   }
 }
 
-bool testAllSides(Grid& grid) {
-  return moveBlocks(grid, {0, 1}, true) ||
-    moveBlocks(grid, {0, -1}, true) ||
-    moveBlocks(grid, {1, 0}, true) ||
-    moveBlocks(grid, {-1, 0}, true);
+bool testAllSides(Grid &grid) {
+  return moveBlocks(grid, {0, 1}, true) || moveBlocks(grid, {0, -1}, true) ||
+         moveBlocks(grid, {1, 0}, true) || moveBlocks(grid, {-1, 0}, true);
+}
+
+void startNewGame() {
+  gameOver = false;
+  score = 0;
+  grid = {{{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}};
+
+  putRandomBlock(grid);
+}
+
+void drawScore() {
+  const std::string scoreText = "Score: " + std::to_string(score);
+  constexpr auto fontSize = 25;
+  DrawText(scoreText.c_str(), 10, 10, fontSize, RED);
 }
 
 void frame() {
-  if (gameOver) {
-    
-  } else {
+  if (IsKeyPressed(KEY_R)) {
+    startNewGame();
+  }
 
-    if(!testAllSides(grid)) {
+  if (gameOver) {
+
+  } else {
+    if (!testAllSides(grid)) {
       gameOver = true;
       return;
     }
@@ -164,17 +181,13 @@ void frame() {
     }
   }
 
-  //DRAW
+  // DRAW
   BeginDrawing();
 
   ClearBackground(RAYWHITE);
 
-  if(gameOver) {
-    constexpr auto fontSize = 10;
-    const std::string text = "GAME OVER !";
-    const auto measuredText = MeasureText(text.c_str(), fontSize);
-    DrawText(text.c_str(), windowSize.x / 2 - measuredText / 2, windowSize.y / 2, fontSize, RED);
-  }
+  drawScore();
+
 
   for (auto i = 0; i < gridSize + 1; i++) {
     const auto linePosition = gridPosition.y + cellSize * i;
@@ -194,33 +207,46 @@ void frame() {
       const auto textMeasure = MeasureText(numberString.c_str(), fontSize);
 
       const auto linePosition =
-          gridPosition.y + cellSize * column +
-          (static_cast<int>(cellSize / 2) - static_cast<int>(textMeasure / 2));
+          gridPosition.x + cellSize * column +
+          (static_cast<int>(cellSize/2) - static_cast<int>(textMeasure/2));
       const auto columnPosition =
-          gridPosition.x + cellSize * line +
-          (static_cast<int>(cellSize / 2) - static_cast<int>(textMeasure / 2));
+          gridPosition.y + cellSize * line +
+          (static_cast<int>(cellSize/2) - static_cast<int>(fontSize / 2));
 
       DrawText(numberString.c_str(), linePosition, columnPosition, fontSize,
                RED);
     }
   }
 
+  if (gameOver) {
+    constexpr auto fontSize = 10;
+    const std::string text = "GAME OVER ! Press 'R' to restart";
+    const auto measuredText = MeasureText(text.c_str(), fontSize);
+    const auto gridRectangle = getGridRect();
+    DrawRectangle(gridRectangle.x - 1, gridRectangle.y - 1, gridRectangle.width + 1, gridRectangle.height + 1, ColorAlpha({255, 255, 255}, 0.9f));
+    DrawText(text.c_str(),
+             windowSize.x / 2 - static_cast<int>(measuredText / 2),
+             windowSize.y / 2, fontSize, RED);
+  }
+
   EndDrawing();
 }
 
 int main(int argc, const char **argv) {
-    InitWindow(windowSize.x, windowSize.y, "2048im");
+  InitWindow(windowSize.x, windowSize.y, "2048im");
 
-    SetTargetFPS(60);
+  startNewGame();
+
+  SetTargetFPS(60);
 
 #ifdef __EMSCRIPTEN__
-    emscripten_set_main_loop(&frame, 0, 1);
+  emscripten_set_main_loop(&frame, 0, 1);
 #else
-    while(!WindowShouldClose()) {
-        frame();
-    }
+  while (!WindowShouldClose()) {
+    frame();
+  }
 #endif
-    CloseWindow();
+  CloseWindow();
 
-    return 0;
+  return 0;
 }
