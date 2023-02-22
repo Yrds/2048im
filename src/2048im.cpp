@@ -32,8 +32,8 @@ constexpr Rectangle getGridRect() {
           cellSize * gridSize};
 }
 
-bool collideCells(Grid &grid, Vector2T<int> cellA, Vector2T<int> cellB,
-                  bool onlyTest) {
+bool collideCells(Grid &grid, const Vector2T<int> cellA, const Vector2T<int> cellB,
+                  const bool onlyTest) {
   if (grid[cellA.x][cellA.y] == grid[cellB.x][cellB.y]) {
     if (!onlyTest) {
       grid[cellA.x][cellA.y] = grid[cellB.x][cellB.y] * 2;
@@ -187,7 +187,6 @@ void frame() {
   ClearBackground(RAYWHITE);
 
   drawScore();
-
 
   for (auto i = 0; i < gridSize + 1; i++) {
     const auto linePosition = gridPosition.y + cellSize * i;
