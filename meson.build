@@ -49,6 +49,7 @@ elif host_machine.system() == 'emscripten'
   link_args += [
     '-s', 'ENVIRONMENT=web',
     '-s', 'USE_GLFW=3',
+    '-o', 'index.html'
   ]
   name_suffix = 'html'
 endif
