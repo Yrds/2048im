@@ -32,8 +32,8 @@ constexpr Rectangle getGridRect() {
           cellSize * gridSize};
 }
 
-bool collideCells(Grid &grid, const Vector2T<int> cellA, const Vector2T<int> cellB,
-                  const bool onlyTest) {
+bool collideCells(Grid &grid, const Vector2T<int> cellA,
+                  const Vector2T<int> cellB, const bool onlyTest) {
   if (grid[cellA.x][cellA.y] == grid[cellB.x][cellB.y]) {
     if (!onlyTest) {
       grid[cellA.x][cellA.y] = grid[cellB.x][cellB.y] * 2;
@@ -207,10 +207,10 @@ void frame() {
 
       const auto linePosition =
           gridPosition.x + cellSize * column +
-          (static_cast<int>(cellSize/2) - static_cast<int>(textMeasure/2));
+          (static_cast<int>(cellSize / 2) - static_cast<int>(textMeasure / 2));
       const auto columnPosition =
           gridPosition.y + cellSize * line +
-          (static_cast<int>(cellSize/2) - static_cast<int>(fontSize / 2));
+          (static_cast<int>(cellSize / 2) - static_cast<int>(fontSize / 2));
 
       DrawText(numberString.c_str(), linePosition, columnPosition, fontSize,
                RED);
@@ -222,7 +222,9 @@ void frame() {
     const std::string text = "GAME OVER ! Press 'R' to restart";
     const auto measuredText = MeasureText(text.c_str(), fontSize);
     const auto gridRectangle = getGridRect();
-    DrawRectangle(gridRectangle.x - 1, gridRectangle.y - 1, gridRectangle.width + 1, gridRectangle.height + 1, ColorAlpha({255, 255, 255}, 0.9f));
+    DrawRectangle(gridRectangle.x - 1, gridRectangle.y - 1,
+                  gridRectangle.width + 1, gridRectangle.height + 1,
+                  ColorAlpha({255, 255, 255}, 0.9f));
     DrawText(text.c_str(),
              windowSize.x / 2 - static_cast<int>(measuredText / 2),
              windowSize.y / 2, fontSize, RED);
