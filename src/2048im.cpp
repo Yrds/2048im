@@ -154,9 +154,7 @@ void frame() {
     startNewGame();
   }
 
-  if (gameOver) {
-
-  } else {
+  if (!gameOver) {
     if (!testAllSides(grid)) {
       gameOver = true;
       return;
