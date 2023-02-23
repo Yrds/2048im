@@ -49,7 +49,8 @@ elif host_machine.system() == 'emscripten'
   link_args += [
     '-s', 'ENVIRONMENT=web',
     '-s', 'USE_GLFW=3',
-    '-o', 'index.html'
+    '-o', 'index.html',
+    '--shell-file', '../../emscripten/shell_minimal.html' #figureout a way to use a environment variable to meson root dir
   ]
   name_suffix = 'html'
 endif
@@ -63,7 +64,7 @@ sources = files(
   'src/2048im.cpp',
 )
 
-executable('2048im',
+exe = executable('2048im',
   sources,
   c_args: c_args,
   cpp_args: cpp_args,
@@ -72,4 +73,6 @@ executable('2048im',
   link_args: link_args,
   name_suffix: name_suffix,
 )
+
+generate_html_zip = run_target('zip', depends: [exe], command: ['scripts/zip.sh'])
 
